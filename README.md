@@ -1,4 +1,4 @@
-# DSP_PrototipoDeCurso
+# Propuesta para Prototipo de Curso
 Proyecto SPA (Single Page Application) presentado en el curso Diseño de Productos y Servicios 2026-01.
 Desarrollado como SPA con HTML, CSS y JavaScript. No implementa base de datos, solo LocalStorage.
 
