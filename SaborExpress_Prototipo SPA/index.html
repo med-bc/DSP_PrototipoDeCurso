@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SaborExpress – Sistema de Gestión de Delivery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/estilos.css" />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: { DEFAULT: "#E84C1E", light: "#FF6B3D", dark: "#C23E18" },
+              surface: { DEFAULT: "#FFFAF7", card: "#FFFFFF" },
+              ink: { DEFAULT: "#1A1A1A", muted: "#6B6B6B" },
+              accent: { DEFAULT: "#F5A623", light: "#FFD166" },
+            },
+            fontFamily: { sans: ["Inter", "system-ui", "sans-serif"] },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-surface font-sans text-ink min-h-screen">
+    <!-- ───────────────────────── TOPBAR ───────────────────────────── -->
+    <header class="bg-brand text-white shadow-md sticky top-0 z-50">
+      <div
+        class="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-lg tracking-tight">SaborExpress</span>
+        </div>
+        <nav class="hidden sm:flex gap-1 text-sm font-medium">
+          <button
+            onclick="showPage('home')"
+            class="nav-btn px-3 py-1 rounded-full hover:bg-brand-light transition"
+          >
+            Inicio
+          </button>
+          <button
+            onclick="showPage('menu')"
+            class="nav-btn px-3 py-1 rounded-full hover:bg-brand-light transition"
+          >
+            Menú
+          </button>
+          <button
+            onclick="showPage('tracking')"
+            class="nav-btn px-3 py-1 rounded-full hover:bg-brand-light transition"
+          >
+            Mis Pedidos
+          </button>
+          <button
+            onclick="showPage('admin')"
+            class="nav-btn px-3 py-1 rounded-full hover:bg-brand-light transition"
+          >
+            Admin
+          </button>
+        </nav>
+        <div class="flex items-center gap-2">
+          <button
+            id="cartBtn"
+            onclick="showPage('cart')"
+            class="relative bg-white text-brand font-bold text-sm px-3 py-1 rounded-full hover:bg-accent hover:text-white transition"
+          >
+            Carrito <span id="cartCount" class="ml-1">0</span>
+          </button>
+          <span
+            id="userGreeting"
+            class="text-xs hidden sm:block opacity-80"
+          ></span>
+          <button
+            id="logoutBtn"
+            onclick="logout()"
+            class="hidden text-xs bg-white/20 px-2 py-1 rounded-full hover:bg-white/30 transition"
+          >
+            Salir
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     PAGE: LOGIN / REGISTRO
+════════════════════════════════════════════════════════════════ -->
+    <div id="page-auth" class="page max-w-md mx-auto px-4 py-12">
+      <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div class="bg-brand px-6 py-8 text-white text-center">
+          <h1 class="text-2xl font-bold">SaborExpress</h1>
+          <p class="text-sm opacity-80 mt-1">
+            Tu delivery favorito, ahora digital
+          </p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex border-b">
+          <button
+            id="tabLogin"
+            onclick="switchAuthTab('login')"
+            class="flex-1 py-3 text-sm font-semibold text-brand border-b-2 border-brand"
+          >
+            Iniciar sesión
+          </button>
+          <button
+            id="tabReg"
+            onclick="switchAuthTab('register')"
+            class="flex-1 py-3 text-sm font-semibold text-ink-muted border-b-2 border-transparent"
+          >
+            Registrarse
+          </button>
+        </div>
+
+        <!-- Login form -->
+        <div id="formLogin" class="p-6 space-y-4">
+          <div>
+            <label class="form-label">Correo electrónico</label>
+            <input
+              id="loginEmail"
+              type="email"
+              placeholder="tu@correo.com"
+              class="form-input"
+            />
+          </div>
+          <div>
+            <label class="form-label">Contraseña</label>
+            <input
+              id="loginPass"
+              type="password"
+              placeholder="••••••••"
+              class="form-input"
+            />
+          </div>
+          <p id="loginError" class="text-red-500 text-xs hidden">
+            Correo o contraseña incorrectos.
+          </p>
+          <button onclick="login()" class="btn-primary w-full">Ingresar</button>
+          <p class="text-xs text-center text-ink-muted">
+            ¿No tienes cuenta?
+            <button
+              onclick="switchAuthTab('register')"
+              class="text-brand underline"
+            >
+              Regístrate
+            </button>
+          </p>
+        </div>
+
+        <!-- Register form -->
+        <div id="formRegister" class="p-6 space-y-4 hidden">
+          <div>
+            <label class="form-label">Nombre completo</label>
+            <input
+              id="regName"
+              type="text"
+              placeholder="Juan Pérez"
+              class="form-input"
+            />
+          </div>
+          <div>
+            <label class="form-label">Correo electrónico</label>
+            <input
+              id="regEmail"
+              type="email"
+              placeholder="tu@correo.com"
+              class="form-input"
+            />
+          </div>
+          <div>
+            <label class="form-label">Contraseña</label>
+            <input
+              id="regPass"
+              type="password"
+              placeholder="Mínimo 6 caracteres"
+              class="form-input"
+            />
+          </div>
+          <div>
+            <label class="form-label">Teléfono</label>
+            <input
+              id="regPhone"
+              type="tel"
+              placeholder="999 000 111"
+              class="form-input"
+            />
+          </div>
+          <div>
+            <label class="form-label">Dirección de entrega</label>
+            <input
+              id="regAddress"
+              type="text"
+              placeholder="Av. Principal 123, Lima"
+              class="form-input"
+            />
+          </div>
+          <p id="regError" class="text-red-500 text-xs hidden"></p>
+          <button onclick="register()" class="btn-primary w-full">
+            Crear cuenta
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     PAGE: HOME
+════════════════════════════════════════════════════════════════ -->
+    <div id="page-home" class="page hidden max-w-5xl mx-auto px-4 py-8">
+      <div
+        class="rounded-2xl overflow-hidden mb-8 bg-gradient-to-r from-brand to-brand-dark text-white p-8"
+      >
+        <p class="text-sm font-medium opacity-80 mb-1">
+          ¡Hola, <span id="heroName">usuario</span>!
+        </p>
+        <h2 class="text-3xl font-bold mb-2">¿Qué se te antoja hoy?</h2>
+        <p class="opacity-80 text-sm mb-4">
+          Pide en segundos, rastrea en tiempo real.
+        </p>
+        <button
+          onclick="showPage('menu')"
+          class="bg-white text-brand font-bold px-5 py-2 rounded-full hover:bg-accent hover:text-white transition text-sm"
+        >
+          Ver menú completo →
+        </button>
+      </div>
+
+      <!-- Stats row -->
+      <div class="grid grid-cols-3 gap-4 mb-8">
+        <div class="bg-white rounded-xl p-4 shadow-sm text-center">
+          <div class="text-2xl font-bold text-brand" id="statPedidos">0</div>
+          <div class="text-xs text-ink-muted">Mis pedidos</div>
+        </div>
+        <div class="bg-white rounded-xl p-4 shadow-sm text-center">
+          <div class="text-2xl font-bold text-accent">~30</div>
+          <div class="text-xs text-ink-muted">Min entrega</div>
+        </div>
+        <div class="bg-white rounded-xl p-4 shadow-sm text-center">
+          <div class="text-2xl font-bold text-green-500">OK</div>
+          <div class="text-xs text-ink-muted">Servicio activo</div>
+        </div>
+      </div>
+
+      <!-- Featured categories -->
+      <h3 class="font-bold text-lg mb-3">Categorías</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+        <button
+          onclick="filterCategory('Hamburguesas')"
+          class="category-card bg-white rounded-xl p-4 shadow-sm hover:shadow-md text-center transition"
+        >
+          <div class="text-sm font-medium">Hamburguesas</div>
+        </button>
+        <button
+          onclick="filterCategory('Pizzas')"
+          class="category-card bg-white rounded-xl p-4 shadow-sm hover:shadow-md text-center transition"
+        >
+          <div class="text-sm font-medium">Pizzas</div>
+        </button>
+        <button
+          onclick="filterCategory('Bebidas')"
+          class="category-card bg-white rounded-xl p-4 shadow-sm hover:shadow-md text-center transition"
+        >
+          <div class="text-sm font-medium">Bebidas</div>
+        </button>
+        <button
+          onclick="filterCategory('Postres')"
+          class="category-card bg-white rounded-xl p-4 shadow-sm hover:shadow-md text-center transition"
+        >
+          <div class="text-sm font-medium">Postres</div>
+        </button>
+      </div>
+
+      <!-- Last order status -->
+      <div
+        id="lastOrderCard"
+        class="hidden bg-white rounded-xl p-5 shadow-sm border-l-4 border-brand mb-4"
+      >
+        <h4 class="font-semibold text-sm mb-2">Último pedido</h4>
+        <div id="lastOrderInfo"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     PAGE: MENÚ
+════════════════════════════════════════════════════════════════ -->
+    <div id="page-menu" class="page hidden max-w-5xl mx-auto px-4 py-8">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold">Nuestro Menú</h2>
+        <select
+          id="categoryFilter"
+          onchange="renderMenu()"
+          class="form-input w-auto text-sm py-1"
+        >
+          <option value="">Todas las categorías</option>
+          <option>Hamburguesas</option>
+          <option>Pizzas</option>
+          <option>Bebidas</option>
+          <option>Postres</option>
+        </select>
+      </div>
+      <div
+        id="menuGrid"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+      ></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     PAGE: CARRITO
+════════════════════════════════════════════════════════════════ -->
+    <div id="page-cart" class="page hidden max-w-2xl mx-auto px-4 py-8">
+      <h2 class="text-2xl font-bold mb-6">Tu Carrito</h2>
+      <div id="cartEmpty" class="text-center py-16 text-ink-muted">
+        <p class="font-medium">Tu carrito está vacío</p>
+        <button onclick="showPage('menu')" class="mt-4 btn-primary">
+          Ver menú
+        </button>
+      </div>
+      <div id="cartContent" class="hidden">
+        <div id="cartItems" class="space-y-3 mb-6"></div>
+        <div class="bg-white rounded-xl p-5 shadow-sm">
+          <div class="flex justify-between text-sm mb-1">
+            <span>Subtotal</span><span id="subtotal">S/ 0.00</span>
+          </div>
+          <div class="flex justify-between text-sm mb-1 text-ink-muted">
+            <span>Envío</span><span>S/ 3.50</span>
+          </div>
+          <div
+            class="flex justify-between font-bold text-lg border-t pt-2 mt-2"
+          >
+            <span>Total</span><span id="totalPrice">S/ 3.50</span>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-5 shadow-sm mt-4">
+          <h3 class="font-semibold mb-3">Confirma tu pedido</h3>
+          <div class="space-y-3">
+            <div>
+              <label class="form-label">Dirección de entrega</label>
+              <input
+                id="orderAddress"
+                type="text"
+                class="form-input"
+                placeholder="Ej. Av. Principal 123, Lima"
+              />
+            </div>
+            <div>
+              <label class="form-label">Método de pago</label>
+              <select id="payMethod" class="form-input">
+                <option>Efectivo al recibir</option>
+                <option>Yape / Plin</option>
+                <option>Tarjeta de crédito</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Notas adicionales (opcional)</label>
+              <input
+                id="orderNotes"
+                type="text"
+                class="form-input"
+                placeholder="Sin cebolla, extra salsa, etc."
+              />
+            </div>
+            <button onclick="placeOrder()" class="btn-primary w-full">
+              Confirmar pedido
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     PAGE: SEGUIMIENTO
+════════════════════════════════════════════════════════════════ -->
+    <div id="page-tracking" class="page hidden max-w-3xl mx-auto px-4 py-8">
+      <h2 class="text-2xl font-bold mb-6">Mis Pedidos</h2>
+      <div id="noOrders" class="text-center py-16 text-ink-muted">
+        <p class="font-medium">Aún no tienes pedidos</p>
+        <button onclick="showPage('menu')" class="mt-4 btn-primary">
+          Hacer mi primer pedido
+        </button>
+      </div>
+      <div id="ordersList" class="space-y-4"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     PAGE: ADMIN
+════════════════════════════════════════════════════════════════ -->
+    <div id="page-admin" class="page hidden max-w-5xl mx-auto px-4 py-8">
+      <!-- Access guard message -->
+      <div id="adminGuard" class="hidden text-center py-16">
+        <p class="font-medium text-ink-muted">
+          Solo accesible como administrador.
+        </p>
+        <p class="text-sm text-ink-muted mt-1">
+          Ingresa con: admin@saborexpress.com / admin123
+        </p>
+      </div>
+
+      <div id="adminContent" class="hidden">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold">Panel Administrativo</h2>
+          <div class="flex gap-2">
+            <button
+              onclick="clearStorage()"
+              class="bg-red-500 text-white text-xs px-3 py-1 rounded-full hover:bg-red-600 transition"
+            >
+              Limpiar Storage
+            </button>
+            <button
+              onclick="exportOrders()"
+              class="bg-blue-500 text-white text-xs px-3 py-1 rounded-full hover:bg-blue-600 transition"
+            >
+              Exportar Pedidos
+            </button>
+            <button
+              onclick="document.getElementById('importFile').click()"
+              class="bg-purple-500 text-white text-xs px-3 py-1 rounded-full hover:bg-purple-600 transition"
+            >
+              Importar Pedidos
+            </button>
+            <input
+              type="file"
+              id="importFile"
+              class="hidden"
+              accept=".json"
+              onchange="importOrders(event)"
+            />
+            <span
+              class="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full"
+              >Admin activo</span
+            >
+          </div>
+        </div>
+
+        <!-- KPI row -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+          <div class="bg-white rounded-xl p-4 shadow-sm text-center">
+            <div class="text-2xl font-bold text-brand" id="kpiTotal">0</div>
+            <div class="text-xs text-ink-muted">Pedidos totales</div>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-sm text-center">
+            <div class="text-2xl font-bold text-yellow-500" id="kpiPending">
+              0
+            </div>
+            <div class="text-xs text-ink-muted">Pendientes</div>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-sm text-center">
+            <div class="text-2xl font-bold text-blue-500" id="kpiProgress">
+              0
+            </div>
+            <div class="text-xs text-ink-muted">En proceso</div>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-sm text-center">
+            <div class="text-2xl font-bold text-green-600" id="kpiDone">0</div>
+            <div class="text-xs text-ink-muted">Entregados</div>
+          </div>
+        </div>
+
+        <!-- Tabs admin -->
+        <div class="flex gap-2 mb-6 border-b">
+          <button
+            onclick="adminTab('pedidos')"
+            class="admin-tab-btn pb-2 text-sm font-semibold border-b-2 border-brand text-brand"
+          >
+            Pedidos
+          </button>
+          <button
+            onclick="adminTab('menu')"
+            class="admin-tab-btn pb-2 text-sm font-semibold border-b-2 border-transparent text-ink-muted ml-4"
+          >
+            Menú
+          </button>
+          <button
+            onclick="adminTab('usuarios')"
+            class="admin-tab-btn pb-2 text-sm font-semibold border-b-2 border-transparent text-ink-muted ml-4"
+          >
+            Usuarios
+          </button>
+        </div>
+
+        <!-- ADMIN: Pedidos -->
+        <div id="adminPedidos" class="admin-section space-y-3">
+          <div id="adminOrdersList"></div>
+        </div>
+
+        <!-- ADMIN: Menú -->
+        <div id="adminMenu" class="admin-section hidden">
+          <div class="bg-white rounded-xl p-5 shadow-sm mb-5">
+            <h3 class="font-semibold mb-3">Agregar producto</h3>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="form-label">Nombre</label
+                ><input
+                  id="newProdName"
+                  class="form-input"
+                  placeholder="Ej. Burger Clásica"
+                />
+              </div>
+              <div>
+                <label class="form-label">Categoría</label>
+                <select id="newProdCat" class="form-input">
+                  <option>Hamburguesas</option>
+                  <option>Pizzas</option>
+                  <option>Bebidas</option>
+                  <option>Postres</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Precio (S/)</label
+                ><input
+                  id="newProdPrice"
+                  type="number"
+                  step="0.5"
+                  class="form-input"
+                  placeholder="0.00"
+                />
+              </div>
+              <div class="col-span-2">
+                <label class="form-label">Descripción</label
+                ><input
+                  id="newProdDesc"
+                  class="form-input"
+                  placeholder="Breve descripción del producto"
+                />
+              </div>
+            </div>
+            <button onclick="addProduct()" class="btn-primary mt-4">
+              Agregar producto
+            </button>
+          </div>
+          <div id="adminMenuList" class="space-y-3"></div>
+        </div>
+
+        <!-- ADMIN: Usuarios -->
+        <div id="adminUsuarios" class="admin-section hidden">
+          <div class="bg-white rounded-xl p-5 shadow-sm mb-5">
+            <h3 class="font-semibold mb-3" id="userFormTitle">
+              Agregar usuario
+            </h3>
+            <input type="hidden" id="editUserId" value="" />
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="form-label">Nombre</label
+                ><input
+                  id="userName"
+                  class="form-input"
+                  placeholder="Nombre completo"
+                />
+              </div>
+              <div>
+                <label class="form-label">Correo</label
+                ><input
+                  id="userEmail"
+                  type="email"
+                  class="form-input"
+                  placeholder="correo@ejemplo.com"
+                />
+              </div>
+              <div>
+                <label class="form-label">Contraseña</label
+                ><input
+                  id="userPass"
+                  type="password"
+                  class="form-input"
+                  placeholder="Min. 6 caracteres"
+                />
+              </div>
+              <div>
+                <label class="form-label">Teléfono</label
+                ><input
+                  id="userPhone"
+                  class="form-input"
+                  placeholder="999 000 111"
+                />
+              </div>
+              <div class="col-span-2">
+                <label class="form-label">Dirección</label
+                ><input
+                  id="userAddr"
+                  class="form-input"
+                  placeholder="Dirección completa"
+                />
+              </div>
+              <div>
+                <label class="form-label">Rol</label>
+                <select id="userRole" class="form-input">
+                  <option value="cliente">Cliente</option>
+                  <option value="admin">Administrador</option>
+                </select>
+              </div>
+            </div>
+            <div class="flex gap-2 mt-4">
+              <button id="btnSaveUser" onclick="saveUser()" class="btn-primary">
+                Guardar usuario
+              </button>
+              <button
+                id="btnCancelUserEdit"
+                onclick="cancelUserEdit()"
+                class="btn-secondary hidden"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+          <div id="adminUsersList" class="space-y-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     MODAL: Confirmación de pedido
+════════════════════════════════════════════════════════════════ -->
+    <div
+      id="modal"
+      class="fixed inset-0 z-50 hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        onclick="closeModal()"
+      ></div>
+      <div
+        class="relative bg-white rounded-2xl shadow-xl p-8 max-w-sm w-full text-center z-10"
+      >
+        <h3 class="text-xl font-bold mb-2" id="modalTitle">
+          ¡Pedido confirmado!
+        </h3>
+        <p class="text-ink-muted text-sm mb-2" id="modalBody"></p>
+        <div
+          id="modalOrderId"
+          class="font-mono bg-surface text-brand font-bold text-sm px-4 py-2 rounded-lg inline-block mb-4"
+        ></div>
+        <div class="text-xs text-ink-muted mb-5">
+          Tiempo estimado: <span class="font-semibold">25 – 40 min</span>
+        </div>
+        <button
+          onclick="
+            closeModal();
+            showPage('tracking');
+          "
+          class="btn-primary w-full"
+        >
+          Ver estado del pedido
+        </button>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 hidden">
+      <div
+        class="bg-ink text-white text-sm px-4 py-2 rounded-lg shadow-lg"
+        id="toastMsg"
+      ></div>
+    </div>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>
