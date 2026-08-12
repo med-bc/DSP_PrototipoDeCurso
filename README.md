@@ -1,5 +1,6 @@
 # DSP_PrototipoDeCurso
 Proyecto SPA (Single Page Application) presentado en el curso Diseño de Productos y Servicios 2026-01.
+Desarrollado como SPA con HTML, CSS y JavaScript. No implementa base de datos, solo LocalStorage.
 
 ## Presentacion
 <img width="1546" height="867" alt="image" src="https://github.com/user-attachments/assets/554c87b6-0baf-496e-b412-625236c2776b" />
@@ -8,5 +9,4 @@ Proyecto SPA (Single Page Application) presentado en el curso Diseño de Product
 <img width="1264" height="706" alt="image" src="https://github.com/user-attachments/assets/b1272b11-153f-42ce-9512-87cc480cc2a5" />
 <img width="1262" height="709" alt="image" src="https://github.com/user-attachments/assets/ef784f03-9717-4941-aa02-b6c916389044" />
 
-## DSP_PrototipoDeCurso
-Desarrollado como SPA con HTML, CSS y JavaScript. No implementa base de datos, solo LocalStorage.
+
